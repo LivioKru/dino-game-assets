@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JSFiddle x1nts8wd</title>
+
+  <style>
+    #score {
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+#game {
+  width: 600px;
+  height: 300px;
+  border: 2px solid black;
+  margin: auto;
+  background-image: url("https://raw.githubusercontent.com/LivioKru/dino-game-assets/main/7b4dc2a52e9df07a33f0b9bf7e3d85b4_Monte02-07-1.jpg");
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  position: relative;
+}
+
+#character {
+  height: 80px;
+  width: 80px;
+  top: 220px;
+  position: relative;
+  background-image: url("https://raw.githubusercontent.com/LivioKru/dino-game-assets/main/tim.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+#rock {
+  width: 50px;
+  height: 50px;
+  position: relative;
+  top: 175px;
+  left: 550px;
+  background-image: url("https://raw.githubusercontent.com/kriscfoster/chrome-dino-game/master/rock.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  animation: rock 1.33s infinite linear;
+}
+
+@keyframes rock {
+  0% { left: 550px; }
+  100% { left: -50px; }
+}
+
+.jump-animation {
+  animation: jump 1.5s;
+}
+
+@keyframes jump {
+  0% { top: 220px; }
+  35% { top: 50px; }
+  85% { top: 50px; }
+  100% { top: 220px; }
+}
+
+#gameOverText,
+#startText {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-family: "Courier New", monospace;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-shadow: 3px 3px 0 #000;
+  user-select: none;
+}
+
+#startText {
+  top: 120px;
+  font-size: 28px;
+  color: #fff;
+}
+
+#gameOverText {
+  top: 110px;
+  font-size: 48px;
+  color: red;
+  display: none;
+}
+  </style>
+
+  
+</head>
+<body>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tim Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div id="game">
+    <div id="character"></div>
+    <div id="rock"></div>
+    <div id="gameOverText">TIM CRASHED</div>
+    <div id="startText">PRESS SPACE TO START</div>
+  </div>
+ 
+  <h1 id="score">0</h1>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
+
+  <script>
+    const character = document.getElementById("character");
+const rock = document.getElementById("rock");
+const score = document.getElementById("score");
+const gameOverText = document.getElementById("gameOverText");
+const startText = document.getElementById("startText");
+
+score.innerText = 0;
+
+let gameStarted = false;
+let loopId = null;
+
+rock.style.animation = "none";
+
+function startGame() {
+  if (gameStarted) return;
+
+  gameStarted = true;
+  score.innerText = 0;
+  gameOverText.style.display = "none";
+  startText.style.display = "none";
+
+  rock.style.left = "550px";
+  rock.style.animation = "rock 1.33s infinite linear";
+
+  loopId = setInterval(() => {
+    const characterTop = parseInt(
+      window.getComputedStyle(character).getPropertyValue("top")
+    );
+
+    const rockLeft = parseInt(
+      window.getComputedStyle(rock).getPropertyValue("left")
+    );
+
+    score.innerText = Number(score.innerText) + 2;
+
+    if (rockLeft < 60 && rockLeft > 0 && characterTop > 150) {
+      rock.style.animation = "none";
+      rock.style.left = rockLeft + "px";
+
+      clearInterval(loopId);
+      loopId = null;
+      gameStarted = false;
+
+      gameOverText.style.display = "block";
+      startText.style.display = "block";
+      startText.innerText = "PRESS SPACE TO RESTART";
+
+      score.innerText = 0;
+      rock.style.left = "550px";
+    }
+  }, 50);
+}
+
+function jump() {
+  if (!gameStarted) return;
+
+  if (!character.classList.contains("jump-animation")) {
+    character.classList.add("jump-animation");
+    setTimeout(() => {
+      character.classList.remove("jump-animation");
+    }, 800);
+  }
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Space") {
+    e.preventDefault();
+
+    if (!gameStarted) {
+      startGame();
+    } else {
+      jump();
+    }
+  }
+});
+  </script>
+</body>
+</html>
