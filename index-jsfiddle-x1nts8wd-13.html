@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>JSFiddle x1nts8wd</title>
+  <title>JSFiddle nmg3zkvt</title>
 
   <style>
     #score {
@@ -13,55 +13,121 @@
   font-family: Arial, sans-serif;
 }
 
+#controls {
+  width: 900px;
+  margin: 15px auto 10px auto;
+  text-align: center;
+}
+
+#startButton {
+  padding: 10px 20px;
+  font-size: 18px;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+  border: 2px solid black;
+  background-color: white;
+  border-radius: 8px;
+}
+
 #game {
-  width: 600px;
-  height: 300px;
+  width: 900px;
+  height: 350px;
   border: 2px solid black;
   margin: auto;
-  background-image: url("https://raw.githubusercontent.com/LivioKru/dino-game-assets/main/7b4dc2a52e9df07a33f0b9bf7e3d85b4_Monte02-07-1.jpg");
-  background-size: cover;
-  background-position: center;
   overflow: hidden;
   position: relative;
+  background-image: url("https://raw.githubusercontent.com/LivioKru/dino-game-assets/main/garage.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 #character {
-  height: 80px;
-  width: 80px;
-  top: 220px;
-  position: relative;
-  background-image: url("https://raw.githubusercontent.com/LivioKru/dino-game-assets/main/tim.png");
+  width: 120px;
+  height: 120px;
+  position: absolute;
+  left: 40px;
+  top: 210px;
+  background-image: url("https://raw.githubusercontent.com/LivioKru/dino-game-assets/main/timgioh.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
 }
 
-#rock {
-  width: 50px;
-  height: 50px;
-  position: relative;
-  top: 175px;
-  left: 550px;
-  background-image: url("https://raw.githubusercontent.com/kriscfoster/chrome-dino-game/master/rock.png");
-  background-size: cover;
+#obstacle {
+  width: 170px;
+  height: 80px;
+  position: absolute;
+  left: 900px;
+  top: 245px;
+  background-image: url("https://raw.githubusercontent.com/LivioKru/dino-game-assets/main/lambo.png");
+  background-size: contain;
   background-repeat: no-repeat;
-  animation: rock 1.33s infinite linear;
+  background-position: center;
+  animation: none;
 }
 
-@keyframes rock {
-  0% { left: 550px; }
-  100% { left: -50px; }
+@keyframes obstacleMove {
+  0% {
+    left: 900px;
+  }
+  100% {
+    left: -220px;
+  }
 }
 
 .jump-animation {
-  animation: jump 1.5s;
+  animation: jump 0.9s ease-out;
 }
 
+/* Verbesserung:
+   Das Springen ist kürzer und natürlicher als vorher.
+   Die Figur bleibt nicht mehr so lange oben
+   und kommt schneller wieder runter. */
 @keyframes jump {
-  0% { top: 220px; }
-  35% { top: 50px; }
-  85% { top: 50px; }
-  100% { top: 220px; }
+  0% {
+    top: 210px;
+  }
+  20% {
+    top: 150px;
+  }
+  40% {
+    top: 90px;
+  }
+  60% {
+    top: 90px;
+  }
+  80% {
+    top: 150px;
+  }
+  100% {
+    top: 210px;
+  }
+}
+
+.crash-animation {
+  animation: crash 0.45s linear 2;
+}
+
+@keyframes crash {
+  0% {
+    transform: translateX(0) rotate(0deg);
+    opacity: 1;
+  }
+  25% {
+    transform: translateX(-10px) rotate(-8deg);
+  }
+  50% {
+    transform: translateX(10px) rotate(8deg);
+    opacity: 0.7;
+  }
+  75% {
+    transform: translateX(-6px) rotate(-4deg);
+  }
+  100% {
+    transform: translateX(0) rotate(0deg);
+    opacity: 1;
+  }
 }
 
 #gameOverText,
@@ -75,18 +141,15 @@
   letter-spacing: 2px;
   text-shadow: 3px 3px 0 #000;
   user-select: none;
+  z-index: 10;
 }
 
-#startText {
-  top: 120px;
-  font-size: 28px;
-  color: #fff;
-}
+
 
 #gameOverText {
-  top: 110px;
+  top: 90px;
   font-size: 48px;
-  color: red;
+  color: white;
   display: none;
 }
   </style>
@@ -99,78 +162,105 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tim Game</title>
+  <title>TimGioh Game</title>
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
   <div id="game">
     <div id="character"></div>
-    <div id="rock"></div>
-    <div id="gameOverText">TIM CRASHED</div>
-    <div id="startText">PRESS SPACE TO START</div>
+    <div id="obstacle"></div>
+    <div id="gameOverText">TIMGIOH CRASHED</div>
+    <div id="startText">PRESS START OR SPACE</div>
   </div>
- 
+
+  <div id="controls">
+    <button id="startButton">Start Game</button>
+  </div>
+
   <h1 id="score">0</h1>
 
   <script src="script.js"></script>
-
 </body>
 </html>
 
   <script>
     const character = document.getElementById("character");
-const rock = document.getElementById("rock");
+const obstacle = document.getElementById("obstacle");
 const score = document.getElementById("score");
 const gameOverText = document.getElementById("gameOverText");
 const startText = document.getElementById("startText");
+const startButton = document.getElementById("startButton");
 
 score.innerText = 0;
 
 let gameStarted = false;
-let loopId = null;
+let gameLoop = null;
+let scoreInterval = null;
 
-rock.style.animation = "none";
+// Game startet am Anfang nicht
+obstacle.style.animation = "none";
 
 function startGame() {
   if (gameStarted) return;
 
   gameStarted = true;
+
   score.innerText = 0;
   gameOverText.style.display = "none";
   startText.style.display = "none";
 
-  rock.style.left = "550px";
-  rock.style.animation = "rock 1.33s infinite linear";
+  character.classList.remove("crash-animation");
+  character.style.top = "210px";
 
-  loopId = setInterval(() => {
+  obstacle.style.animation = "none";
+  obstacle.style.left = "900px";
+
+  setTimeout(() => {
+    obstacle.style.animation = "obstacleMove 2s infinite linear";
+  }, 50);
+
+  scoreInterval = setInterval(() => {
+    score.innerText = Number(score.innerText) + 1;
+  }, 100);
+
+  gameLoop = setInterval(() => {
     const characterTop = parseInt(
       window.getComputedStyle(character).getPropertyValue("top")
     );
 
-    const rockLeft = parseInt(
-      window.getComputedStyle(rock).getPropertyValue("left")
+    const obstacleLeft = parseInt(
+      window.getComputedStyle(obstacle).getPropertyValue("left")
     );
 
-    score.innerText = Number(score.innerText) + 2;
-
-    if (rockLeft < 60 && rockLeft > 0 && characterTop > 150) {
-      rock.style.animation = "none";
-      rock.style.left = rockLeft + "px";
-
-      clearInterval(loopId);
-      loopId = null;
-      gameStarted = false;
-
-      gameOverText.style.display = "block";
-      startText.style.display = "block";
-      startText.innerText = "PRESS SPACE TO RESTART";
-
-      score.innerText = 0;
-      rock.style.left = "550px";
+    // Kollisionsbereich angepasst auf den Lamborghini
+    if (obstacleLeft < 150 && obstacleLeft > 20 && characterTop > 170) {
+      endGame(obstacleLeft);
     }
-  }, 50);
+  }, 20);
+}
+
+function endGame(obstacleLeft) {
+  obstacle.style.animation = "none";
+  obstacle.style.left = obstacleLeft + "px";
+
+  clearInterval(gameLoop);
+  clearInterval(scoreInterval);
+
+  gameLoop = null;
+  scoreInterval = null;
+  gameStarted = false;
+
+  gameOverText.style.display = "block";
+  startText.style.display = "block";
+  startText.innerText = "PRESS START OR SPACE TO RESTART";
+
+  character.classList.add("crash-animation");
+
+  setTimeout(() => {
+    character.classList.remove("crash-animation");
+    obstacle.style.left = "900px";
+  }, 700);
 }
 
 function jump() {
@@ -178,11 +268,17 @@ function jump() {
 
   if (!character.classList.contains("jump-animation")) {
     character.classList.add("jump-animation");
+
     setTimeout(() => {
       character.classList.remove("jump-animation");
-    }, 800);
+    }, 900);
   }
 }
+
+startButton.addEventListener("click", () => {
+  console.log("Start button was clicked");
+  startGame();
+});
 
 document.addEventListener("keydown", (e) => {
   if (e.code === "Space") {
